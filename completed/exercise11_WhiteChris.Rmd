@@ -1,0 +1,92 @@
+---
+title: "Exercise 11"
+author: "Chris White"
+date: "October 18, 2020"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+Question: Using your ‘clean’ data set from the previous week complete the following:
+
+Answer: Last week we didn't use this data set nor did we create a 'clean' data set. I don't think we've even covered the topic of cleaning data sets. 
+
+Question: Explain why you chose to remove data points from your ‘clean’ dataset.
+
+Answer: last week we didn't use this data set nor did we create a 'clean' data set. I don't think we've even covered the topic of cleaning data sets. 
+
+Question: Create two variables; one that will contain the variables Sale Price and Square Foot of Lot (same variables used from previous assignment on simple regression) and one that will contain Sale Price and several additional predictors of your choice. Explain the basis for your additional predictor selections.
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(readxl)
+setwd("C:/Users/Chris/Documents/GitHub/dsc520")
+housing_df <- read_excel("data/week-7-housing.xlsx")
+salePrice <- housing_df$`Sale Price`
+lotsqft <- housing_df$sq_ft_lot
+livingsqft <- housing_df$square_feet_total_living
+zipcode <- housing_df$zip5
+yearbuilt <- housing_df$year_built
+run_1 <- lm(salePrice~lotsqft, data = housing_df)
+run_2 <- lm(salePrice~livingsqft + zipcode + yearbuilt, data = housing_df)
+summary(run_1)
+summary(run_2)
+
+```
+Answer: I chose the square footage of the living space because most people have size requirements for a home purchase. I chose zipcode becuase most people want a home in a specific zip code or school district. I chose year built because some people want older homes for architecture purposes or a newer home as in new construction.
+
+Question: Execute a summary() function on two variables defined in the previous step to compare the model results. What are the R2 and Adjusted R2 statistics? Explain what these results tell you about the overall model. Did the inclusion of the additional predictors help explain any large variations found in Sale Price?
+
+Answer: For run_1 the R2 and adjusted R2 is: Multiple R-squared:  0.01435,	Adjusted R-squared:  0.01428 
+
+Answer: For run_2 the R2 and adjusted R2 is: Multiple R-squared: 0.2185,	Adjusted R-squared:  0.2183 
+
+Answer: For run_1 the both R2s seem low and for run_2 it increased. For run_2 it increased due to it taking into account the additional independant variables. I can't say whether or not it affected any large variations in the sales price.
+
+Question: Considering the parameters of the multiple regression model you have created. What are the standardized betas for each parameter and what do the values indicate?
+
+```{r, include=FALSE}
+sbrun_1 <- lm(scale(salePrice)~scale(lotsqft), data = housing_df)
+sbrun_2 <- lm(scale(salePrice)~scale(livingsqft + zipcode + yearbuilt), data = housing_df)
+sbrun_1
+sbrun_2
+
+```
+Question: Calculate the confidence intervals for the parameters in your model and explain what the results indicate.
+
+```{r, include=FALSE}
+confint(run_1)
+confint(run_2)
+
+```
+Answer: The confidence intervals for run_1 indicate evidence of a linear relationship. The confidence intervals for run_2 indicate 
+
+Question: Assess the improvement of the new model compared to your original model (simple regression model) by testing whether this change is significant by performing an analysis of variance.
+
+```{r, include=FALSE}
+one.way <- aov(run_1~run_2, data = housing_df)
+
+```
+Question: Perform casewise diagnostics to identify outliers and/or influential cases, storing each function's output in a dataframe assigned to a unique variable name.
+
+```{r, include=FALSE}
+outlier(housing_df, opposite = FALSE, logical = FALSE)
+
+```
+Question: Calculate the standardized residuals using the appropriate command, specifying those that are +-2, storing the results of large residuals in a variable you create.
+
+```{r, include=FALSE}
+largeres1 <- rstandard(run_1)
+largeres2 <- rstandard(run_2)
+head(largeres1)
+head(largeres2)
+
+```
+Question: Use the appropriate function to show the sum of large residuals.
+
+```{r, include=FALSE}
+sum(largeres1)
+sum(largeres2)
+
+```
